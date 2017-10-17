@@ -4521,6 +4521,7 @@ Network.prototype.toString = function toString() {
  * @return Network
  */
 function get(arg, keys) {
+
     if (~networks.indexOf(arg)) {
         return arg;
     }
@@ -4565,10 +4566,17 @@ function addNetwork(data) {
     JSUtil.defineImmutable(network, {
         name: data.name,
         alias: data.alias,
+        coin: data.coin,
+        coinName: data.coinName,
+        shortName: data.shortName,
+        algorithm: data.algorithm,
+        txtimestamp: data.txtimestamp,
         pubkeyhash: data.pubkeyhash,
         privatekey: data.privatekey,
         scripthash: data.scripthash,
+        prefix: data.prefix,
         xpubkey: data.xpubkey,
+
         xprivkey: data.xprivkey
     });
 
@@ -4626,7 +4634,7 @@ addNetwork({
     coin: 'btc',
     coinName: 'BITCOIN',
     shortName: 'BTC',
-
+    prefix: '1',
     pubkeyhash: 0x00,
     privatekey: 0x80,
     scripthash: 0x05,
@@ -4645,26 +4653,6 @@ addNetwork({
 });
 
 
-addNetwork({
-    name: 'ventas',
-    alias: 'ventas',
-    coin: 'ven',
-    coinName: 'VENTAS',
-    shortName: 'VEN',
-    algorithm: 'scrypt',
-    txtimestamp: true,
-    pubkeyhash: 0x46,
-    privatekey: 0xcc,
-    scripthash: 0x84,
-    xpubkey: 0x0488b21e,
-    xprivkey: 0x0488ade4,
-    networkMagic: 0x76656e74,
-    port: 13101,
-    dnsSeeds: [
-        'chain001.bitchk.com'
-    ]
-});
-
 
 /**
  * @instance
@@ -4675,6 +4663,7 @@ var livenet = get('livenet');
 addNetwork({
     name: 'testnet',
     alias: 'regtest',
+    prefix: 't',
     pubkeyhash: 0x6f,
     privatekey: 0xef,
     scripthash: 0xc4,
@@ -4773,6 +4762,28 @@ function disableRegtest() {
     testnet.regtestEnabled = false;
 }
 
+
+addNetwork({
+    name: 'ventas',
+    alias: 'ventas',
+    coin: 'ven',
+    coinName: 'VENTAS',
+    shortName: 'VEN',
+    algorithm: 'scrypt',
+    txtimestamp: true,
+    prefix: 'V',
+    pubkeyhash: 0x46,
+    privatekey: 0xcc,
+    scripthash: 0x84,
+    xpubkey: 0x0488b21e,
+    xprivkey: 0x0488ade4,
+    networkMagic: 0x76656e74,
+    port: 13101,
+    dnsSeeds: [
+        'chain001.bitchk.com'
+    ]
+});
+var ventas = get('ventas');
 /**
  * @namespace Networks
  */
@@ -4783,9 +4794,11 @@ module.exports = {
     livenet: livenet,
     mainnet: livenet,
     testnet: testnet,
+    ventas: ventas,
     get: get,
     enableRegtest: enableRegtest,
-    disableRegtest: disableRegtest
+    disableRegtest: disableRegtest,
+    networks: networks
 };
 },{"./util/buffer":42,"./util/js":43,"lodash":195}],22:[function(require,module,exports){
 (function (Buffer){
