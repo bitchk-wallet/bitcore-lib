@@ -4574,9 +4574,10 @@ function addNetwork(data) {
         pubkeyhash: data.pubkeyhash,
         privatekey: data.privatekey,
         scripthash: data.scripthash,
+        skipSignTime: data.skipSignTime,
         prefix: data.prefix,
+        url: data.url,
         xpubkey: data.xpubkey,
-
         xprivkey: data.xprivkey
     });
 
@@ -4632,6 +4633,7 @@ addNetwork({
     name: 'livenet',
     alias: 'mainnet',
     coin: 'btc',
+    url: 'bitcoin:',
     coinName: 'BITCOIN',
     shortName: 'BTC',
     prefix: '1',
@@ -4768,9 +4770,12 @@ addNetwork({
     alias: 'ventas',
     coin: 'ven',
     coinName: 'VENTAS',
+
+    url: 'ventas:',
     shortName: 'VEN',
     algorithm: 'scrypt',
     txtimestamp: true,
+    skipSignTime: true,
     prefix: 'V',
     pubkeyhash: 0x46,
     privatekey: 0xcc,
@@ -4781,6 +4786,33 @@ addNetwork({
     port: 13101,
     dnsSeeds: [
         'chain001.bitchk.com'
+    ]
+});
+
+addNetwork({
+    name: 'litecoin',
+    alias: 'litecoin',
+    coin: 'ltc',
+    url: 'litecoin:',
+    coinName: 'LITECOIN',
+    shortName: 'LTC',
+    algorithm: 'scrypt',
+    txtimestamp: false,
+    prefix: 'L',
+    pubkeyhash: 0x30,
+    privatekey: 0xb0,
+    scripthash: 0x32,
+    xpubkey: 0x019da462,
+    xprivkey: 0x019d9cfe,
+    networkMagic: 0xfbc0b6db,
+    port: 9333,
+    dnsSeeds: [
+        'dnsseed.litecointools.com',
+        'dnsseed.litecoinpool.org',
+        'dnsseed.ltc.xurious.com',
+        'dnsseed.koin-project.com',
+        'seed-a.litecoin.loshan.co.uk',
+        'dnsseed.thrasher.io'
     ]
 });
 var ventas = get('ventas');
@@ -9204,7 +9236,9 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
     var Input = require('./input');
 
     var i;
-    if (transaction.network && transaction.network.name == 'ventas')
+    if (!transaction.network)
+        throw new Error("no network");
+    if (transaction.network && transaction.network.skipSignTime)
         transaction.skipWriteTime = true;
     // Copy transaction
     var txcopy = Transaction.shallowCopy(transaction);
@@ -11001,7 +11035,7 @@ var URL = require('url');
 
 var Address = require('./address');
 var Unit = require('./unit');
-
+var Networks = require('./networks');
 /**
  * Bitcore URI
  *
@@ -11029,25 +11063,25 @@ var Unit = require('./unit');
  * @constructor
  */
 var URI = function(data, knownParams) {
-  if (!(this instanceof URI)) {
-    return new URI(data, knownParams);
-  }
-
-  this.extras = {};
-  this.knownParams = knownParams || [];
-  this.address = this.network = this.amount = this.message = null;
-
-  if (typeof(data) === 'string') {
-    var params = URI.parse(data);
-    if (params.amount) {
-      params.amount = this._parseAmount(params.amount);
+    if (!(this instanceof URI)) {
+        return new URI(data, knownParams);
     }
-    this._fromObject(params);
-  } else if (typeof(data) === 'object') {
-    this._fromObject(data);
-  } else {
-    throw new TypeError('Unrecognized data format.');
-  }
+
+    this.extras = {};
+    this.knownParams = knownParams || [];
+    this.address = this.network = this.amount = this.message = null;
+
+    if (typeof(data) === 'string') {
+        var params = URI.parse(data);
+        if (params.amount) {
+            params.amount = this._parseAmount(params.amount);
+        }
+        this._fromObject(params);
+    } else if (typeof(data) === 'object') {
+        this._fromObject(data);
+    } else {
+        throw new TypeError('Unrecognized data format.');
+    }
 };
 
 /**
@@ -11057,10 +11091,10 @@ var URI = function(data, knownParams) {
  * @returns {URI} A new instance of a URI
  */
 URI.fromString = function fromString(str) {
-  if (typeof(str) !== 'string') {
-    throw new TypeError('Expected a string');
-  }
-  return new URI(str);
+    if (typeof(str) !== 'string') {
+        throw new TypeError('Expected a string');
+    }
+    return new URI(str);
 };
 
 /**
@@ -11070,7 +11104,7 @@ URI.fromString = function fromString(str) {
  * @returns {URI} A new instance of a URI
  */
 URI.fromObject = function fromObject(json) {
-  return new URI(json);
+    return new URI(json);
 };
 
 /**
@@ -11088,12 +11122,12 @@ URI.fromObject = function fromObject(json) {
  * @returns {boolean} Result of uri validation
  */
 URI.isValid = function(arg, knownParams) {
-  try {
-    new URI(arg, knownParams);
-  } catch (err) {
-    return false;
-  }
-  return true;
+    try {
+        new URI(arg, knownParams);
+    } catch (err) {
+        return false;
+    }
+    return true;
 };
 
 /**
@@ -11104,17 +11138,20 @@ URI.isValid = function(arg, knownParams) {
  * @returns {Object} An object with the parsed params
  */
 URI.parse = function(uri) {
-  var info = URL.parse(uri, true);
+    var info = URL.parse(uri, true);
 
-  if (info.protocol !== 'bitcoin:') {
-    throw new TypeError('Invalid bitcoin URI');
-  }
+    var net = Networks.get(info.protocol, "url");
+    // if (info.protocol !== 'bitcoin:') {
+    //     throw new TypeError('Invalid bitcoin URI');
+    // }
+    if (!net) {
+        throw new TypeError('Invalid coin URI:' + info.protocol);
+    }
+    // workaround to host insensitiveness
+    var group = /[^:]*:\/?\/?([^?]*)/.exec(uri);
+    info.query.address = group && group[1] || undefined;
 
-  // workaround to host insensitiveness
-  var group = /[^:]*:\/?\/?([^?]*)/.exec(uri);
-  info.query.address = group && group[1] || undefined;
-
-  return info.query;
+    return info.query;
 };
 
 URI.Members = ['address', 'amount', 'message', 'label', 'r'];
@@ -11128,28 +11165,28 @@ URI.Members = ['address', 'amount', 'message', 'label', 'r'];
  * @throws {Error} Unknown required argument
  */
 URI.prototype._fromObject = function(obj) {
-  /* jshint maxcomplexity: 10 */
+    /* jshint maxcomplexity: 10 */
 
-  if (!Address.isValid(obj.address)) {
-    throw new TypeError('Invalid bitcoin address');
-  }
-
-  this.address = new Address(obj.address);
-  this.network = this.address.network;
-  this.amount = obj.amount;
-
-  for (var key in obj) {
-    if (key === 'address' || key === 'amount') {
-      continue;
+    if (!Address.isValid(obj.address)) {
+        throw new TypeError('Invalid bitcoin address');
     }
 
-    if (/^req-/.exec(key) && this.knownParams.indexOf(key) === -1) {
-      throw Error('Unknown required argument ' + key);
-    }
+    this.address = new Address(obj.address);
+    this.network = this.address.network;
+    this.amount = obj.amount;
 
-    var destination = URI.Members.indexOf(key) > -1 ? this : this.extras;
-    destination[key] = obj[key];
-  }
+    for (var key in obj) {
+        if (key === 'address' || key === 'amount') {
+            continue;
+        }
+
+        if (/^req-/.exec(key) && this.knownParams.indexOf(key) === -1) {
+            throw Error('Unknown required argument ' + key);
+        }
+
+        var destination = URI.Members.indexOf(key) > -1 ? this : this.extras;
+        destination[key] = obj[key];
+    }
 };
 
 /**
@@ -11160,23 +11197,23 @@ URI.prototype._fromObject = function(obj) {
  * @returns {Object} Amount represented in satoshis
  */
 URI.prototype._parseAmount = function(amount) {
-  amount = Number(amount);
-  if (isNaN(amount)) {
-    throw new TypeError('Invalid amount');
-  }
-  return Unit.fromBTC(amount).toSatoshis();
+    amount = Number(amount);
+    if (isNaN(amount)) {
+        throw new TypeError('Invalid amount');
+    }
+    return Unit.fromBTC(amount).toSatoshis();
 };
 
 URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
-  var json = {};
-  for (var i = 0; i < URI.Members.length; i++) {
-    var m = URI.Members[i];
-    if (this.hasOwnProperty(m) && typeof(this[m]) !== 'undefined') {
-      json[m] = this[m].toString();
+    var json = {};
+    for (var i = 0; i < URI.Members.length; i++) {
+        var m = URI.Members[i];
+        if (this.hasOwnProperty(m) && typeof(this[m]) !== 'undefined') {
+            json[m] = this[m].toString();
+        }
     }
-  }
-  _.extend(json, this.extras);
-  return json;
+    _.extend(json, this.extras);
+    return json;
 };
 
 /**
@@ -11185,26 +11222,26 @@ URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
  * @returns {string} Bitcoin URI string
  */
 URI.prototype.toString = function() {
-  var query = {};
-  if (this.amount) {
-    query.amount = Unit.fromSatoshis(this.amount).toBTC();
-  }
-  if (this.message) {
-    query.message = this.message;
-  }
-  if (this.label) {
-    query.label = this.label;
-  }
-  if (this.r) {
-    query.r = this.r;
-  }
-  _.extend(query, this.extras);
+    var query = {};
+    if (this.amount) {
+        query.amount = Unit.fromSatoshis(this.amount).toBTC();
+    }
+    if (this.message) {
+        query.message = this.message;
+    }
+    if (this.label) {
+        query.label = this.label;
+    }
+    if (this.r) {
+        query.r = this.r;
+    }
+    _.extend(query, this.extras);
 
-  return URL.format({
-    protocol: 'bitcoin:',
-    host: this.address,
-    query: query
-  });
+    return URL.format({
+        protocol: 'bitcoin:',
+        host: this.address,
+        query: query
+    });
 };
 
 /**
@@ -11213,12 +11250,11 @@ URI.prototype.toString = function() {
  * @returns {string} Bitcoin URI
  */
 URI.prototype.inspect = function() {
-  return '<URI: ' + this.toString() + '>';
+    return '<URI: ' + this.toString() + '>';
 };
 
 module.exports = URI;
-
-},{"./address":1,"./unit":40,"lodash":195,"url":253}],42:[function(require,module,exports){
+},{"./address":1,"./networks":21,"./unit":40,"lodash":195,"url":253}],42:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 
