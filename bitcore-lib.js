@@ -9236,12 +9236,14 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
     var Input = require('./input');
 
     var i;
-    if (!transaction.network)
-        throw new Error("no network");
-    if (transaction.network && transaction.network.skipSignTime)
-        transaction.skipWriteTime = true;
+    if (!transaction.network) {
+        console.log("sighash ======= ", transaction);
+        throw new Error("no network !!!");
+    }
+    var skipSignTime = transaction.network.skipSignTime;
     // Copy transaction
     var txcopy = Transaction.shallowCopy(transaction);
+    txcopy.network = transaction.network;
 
     // Copy script
     subscript = new Script(subscript);
@@ -9289,8 +9291,9 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
         txcopy.inputs = [txcopy.inputs[inputNumber]];
     }
 
+
     var buf = new BufferWriter()
-        .write(txcopy.toBuffer())
+        .write(txcopy.toBuffer(skipSignTime))
         .writeInt32LE(sighashType)
         .toBuffer();
     var ret = Hash.sha256sha256(buf);
@@ -9536,6 +9539,8 @@ Transaction.MAXIMUM_EXTRA_SIZE = 4 + 9 + 9 + 4;
  */
 Transaction.shallowCopy = function(transaction) {
     var copy = new Transaction(transaction.toBuffer());
+    copy.network = transaction.network;
+
     return copy;
 };
 
@@ -9714,21 +9719,25 @@ Transaction.prototype.inspect = function() {
     return '<Transaction: ' + this.uncheckedSerialize() + '>';
 };
 
-Transaction.prototype.toBuffer = function() {
+Transaction.prototype.toBuffer = function(skipWriteTime) {
     var writer = new BufferWriter();
-    return this.toBufferWriter(writer).toBuffer();
+    return this.toBufferWriter(writer, skipWriteTime).toBuffer();
 };
 
-Transaction.prototype.toBufferWriter = function(writer, network) {
+Transaction.prototype.toBufferWriter = function(writer, skipWriteTime) {
     writer.writeInt32LE(this.version);
-
-    if (network && network.txtimestamp) {
-        if (!this.skipWriteTime)
+    if (!this.network) {
+        throw new Error("no network ");
+    }
+    if (this.network && this.network.txtimestamp) {
+        if (!skipWriteTime)
             writer.writeUInt32LE(this.ntime);
     }
 
     writer.writeVarintNum(this.inputs.length);
+    console.log("inputs", this.inputs);
     _.each(this.inputs, function(input) {
+        console.log("input ", input);
         input.toBufferWriter(writer);
     });
     writer.writeVarintNum(this.outputs.length);
@@ -9777,7 +9786,6 @@ Transaction.prototype.toObject = Transaction.prototype.toJSON = function toObjec
         hash: this.hash,
         version: this.version,
         ntime: this.ntime,
-        skipWriteTime: this.skipWriteTime,
         inputs: inputs,
         outputs: outputs,
         nLockTime: this.nLockTime
@@ -9839,7 +9847,6 @@ Transaction.prototype.fromObject = function fromObject(arg) {
     this.nLockTime = transaction.nLockTime;
     this.version = transaction.version;
     this.ntime = transaction.ntime;
-    this.skipWriteTime = transaction.skipWriteTime;
 
     this._checkConsistency(arg);
     return this;
@@ -9935,7 +9942,7 @@ Transaction.prototype._newTransaction = function() {
     this.version = CURRENT_VERSION;
     this.nLockTime = DEFAULT_NLOCKTIME;
     this.ntime = 0;
-    this.skipWriteTime = false;
+
 };
 
 /* Transaction creation interface */
@@ -10521,16 +10528,23 @@ Transaction.prototype.sign = function(privateKey, sigtype) {
 };
 
 Transaction.prototype.getSignatures = function(privKey, sigtype) {
+
+
+    console.log("getSignatures", 1);
     privKey = new PrivateKey(privKey);
     sigtype = sigtype || Signature.SIGHASH_ALL;
     var transaction = this;
     var results = [];
     var hashData = Hash.sha256ripemd160(privKey.publicKey.toBuffer());
     _.each(this.inputs, function forEachInput(input, index) {
+        console.log("a", index);
         _.each(input.getSignatures(transaction, privKey, index, sigtype, hashData), function(signature) {
+            console.log("sign", signature);
             results.push(signature);
         });
     });
+
+    console.log("getSignatures", results);
     return results;
 };
 
