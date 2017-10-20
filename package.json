@@ -1,8 +1,9 @@
 {
     "name": "bitcore-lib",
     "version": "0.14.0",
-    "description": "A pure and powerful JavaScript Bitcoin library.",
+    "description": "A pure and powerful JavaScript Bitcoin library for bitChk-wallet.",
     "author": "BitPay <dev@bitpay.com>",
+    "support": "support@bitchk.com",
     "main": "index.js",
     "scripts": {
         "lint": "gulp lint",
@@ -73,7 +74,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/bitpay/bitcore-lib.git"
+        "url": "https://github.com/bitchk-wallet/bitcore-lib.git"
     },
     "browser": {
         "request": "browser-request"
@@ -88,7 +89,7 @@
         "scryptsy": "2.0.0"
     },
     "devDependencies": {
-        "bitcore-build": "bitpay/bitcore-build",
+        "bitcore-build": "https://github.com/bitchk-wallet/bitcore-build.git",
         "brfs": "^1.2.0",
         "chai": "^1.10.0",
         "gulp": "^3.8.10",
