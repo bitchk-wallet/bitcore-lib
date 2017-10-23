@@ -10,7 +10,8 @@
         "coverage": "gulp coverage",
         "build": "gulp"
     },
-    "contributors": [{
+    "contributors": [
+        {
             "name": "Daniel Cousens",
             "email": "bitcoin@dcousens.com"
         },
