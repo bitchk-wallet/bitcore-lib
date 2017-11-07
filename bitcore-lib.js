@@ -4770,7 +4770,6 @@ addNetwork({
     alias: 'ventas',
     coin: 'ven',
     coinName: 'VENTAS',
-
     url: 'ventas:',
     shortName: 'VEN',
     algorithm: 'scrypt',
@@ -4788,6 +4787,30 @@ addNetwork({
         'chain001.bitchk.com'
     ]
 });
+
+addNetwork({
+    name: 'livenet',
+    alias: 'mainnet',
+    coin: 'yng',
+    url: 'yangcoin:',
+    coinName: 'YANGCOIN',
+    shortName: 'YNG',
+    prefix: 'Y',
+    txtimestamp: true,
+    skipSignTime: true,
+    algorithm: "scrypt",
+    pubkeyhash: 0x4e,
+    privatekey: 0x8c,
+    scripthash: 0xcc,
+    xpubkey: 0x0488b21e,
+    xprivkey: 0x0488ade4,
+    networkMagic: 0x59414e47,
+    port: 23001,
+    dnsSeeds: [
+        'chain001.bitchk.com'
+    ]
+});
+
 
 addNetwork({
     name: 'litecoin',
@@ -4816,6 +4839,7 @@ addNetwork({
     ]
 });
 var ventas = get('ventas');
+var yangcoin = get('yangcoin');
 /**
  * @namespace Networks
  */
