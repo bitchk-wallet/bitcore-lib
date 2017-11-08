@@ -4787,10 +4787,9 @@ addNetwork({
         'chain001.bitchk.com'
     ]
 });
-
 addNetwork({
-    name: 'livenet',
-    alias: 'mainnet',
+    name: 'yangcoin',
+    alias: 'yangcoin',
     coin: 'yng',
     url: 'yangcoin:',
     coinName: 'YANGCOIN',
@@ -4851,6 +4850,7 @@ module.exports = {
     mainnet: livenet,
     testnet: testnet,
     ventas: ventas,
+    yangcoin: yangcoin,
     get: get,
     enableRegtest: enableRegtest,
     disableRegtest: disableRegtest,
