@@ -4860,7 +4860,7 @@ addNetwork({
     name: 'qctcoin',
     alias: 'qctcoin',
     coin: 'qct',
-    url: 'qctcoin:',
+    url: 'qcity:',
     coinName: 'QCITYCOIN',
     shortName: 'QCT',
     prefix: 'C',
@@ -9349,8 +9349,8 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
         throw new Error("no network !!!");
     }
     var skipSignTime = transaction.network.skipSignTime;
-    if (!skipSignTime)
-        console.log("skip sign");
+    // if (!skipSignTime)
+    //     console.log("skip sign");
 
     // Copy transaction
     var txcopy = Transaction.shallowCopy(transaction);
