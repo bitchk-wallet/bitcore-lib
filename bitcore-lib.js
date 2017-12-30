@@ -1376,7 +1376,7 @@ var BN = require('bn.js');
 var $ = require('../util/preconditions');
 var _ = require('lodash');
 
-var reversebuf = function(buf) {
+var reversebuf = function (buf) {
   var buf2 = new Buffer(buf.length);
   for (var i = 0; i < buf.length; i++) {
     buf2[i] = buf[buf.length - 1 - i];
@@ -1388,17 +1388,22 @@ BN.Zero = new BN(0);
 BN.One = new BN(1);
 BN.Minus1 = new BN(-1);
 
-BN.fromNumber = function(n) {
+BN.fromNumber = function (n) {
   $.checkArgument(_.isNumber(n));
-  return new BN(n);
+  if (n >= 0x20000000000000) {
+    return BN.fromString('' + n, 10);
+  } else {
+    return new BN(n);
+  }
+
 };
 
-BN.fromString = function(str, base) {
+BN.fromString = function (str, base) {
   $.checkArgument(_.isString(str));
   return new BN(str, base);
 };
 
-BN.fromBuffer = function(buf, opts) {
+BN.fromBuffer = function (buf, opts) {
   if (typeof opts !== 'undefined' && opts.endian === 'little') {
     buf = reversebuf(buf);
   }
@@ -1411,7 +1416,7 @@ BN.fromBuffer = function(buf, opts) {
  * Instantiate a BigNumber from a "signed magnitude buffer"
  * (a buffer where the most significant bit represents the sign (0 = positive, -1 = negative))
  */
-BN.fromSM = function(buf, opts) {
+BN.fromSM = function (buf, opts) {
   var ret;
   if (buf.length === 0) {
     return BN.fromBuffer(new Buffer([0]));
@@ -1436,11 +1441,11 @@ BN.fromSM = function(buf, opts) {
 };
 
 
-BN.prototype.toNumber = function() {
+BN.prototype.toNumber = function () {
   return parseInt(this.toString(10), 10);
 };
 
-BN.prototype.toBuffer = function(opts) {
+BN.prototype.toBuffer = function (opts) {
   var buf, hex;
   if (opts && opts.size) {
     hex = this.toString(16, 2);
@@ -1466,7 +1471,7 @@ BN.prototype.toBuffer = function(opts) {
   return buf;
 };
 
-BN.prototype.toSMBigEndian = function() {
+BN.prototype.toSMBigEndian = function () {
   var buf;
   if (this.cmp(BN.Zero) === -1) {
     buf = this.neg().toBuffer();
@@ -1488,7 +1493,7 @@ BN.prototype.toSMBigEndian = function() {
   return buf;
 };
 
-BN.prototype.toSM = function(opts) {
+BN.prototype.toSM = function (opts) {
   var endian = opts ? opts.endian : 'big';
   var buf = this.toSMBigEndian();
 
@@ -1506,7 +1511,7 @@ BN.prototype.toSM = function(opts) {
  * 4 bytes. We copy that behavior here. A third argument, `size`, is provided to
  * extend the hard limit of 4 bytes, as some usages require more than 4 bytes.
  */
-BN.fromScriptNumBuffer = function(buf, fRequireMinimal, size) {
+BN.fromScriptNumBuffer = function (buf, fRequireMinimal, size) {
   var nMaxNumSize = size || 4;
   $.checkArgument(buf.length <= nMaxNumSize, new Error('script number overflow'));
   if (fRequireMinimal && buf.length > 0) {
@@ -1538,29 +1543,29 @@ BN.fromScriptNumBuffer = function(buf, fRequireMinimal, size) {
  * performing a numerical operation that results in an overflow to more than 4
  * bytes).
  */
-BN.prototype.toScriptNumBuffer = function() {
+BN.prototype.toScriptNumBuffer = function () {
   return this.toSM({
     endian: 'little'
   });
 };
 
-BN.prototype.gt = function(b) {
+BN.prototype.gt = function (b) {
   return this.cmp(b) > 0;
 };
 
-BN.prototype.gte = function(b) {
+BN.prototype.gte = function (b) {
   return this.cmp(b) >= 0;
 };
 
-BN.prototype.lt = function(b) {
+BN.prototype.lt = function (b) {
   return this.cmp(b) < 0;
 };
 
-BN.trim = function(buf, natlen) {
+BN.trim = function (buf, natlen) {
   return buf.slice(natlen - buf.length, buf.length);
 };
 
-BN.pad = function(buf, natlen, size) {
+BN.pad = function (buf, natlen, size) {
   var rbuf = new Buffer(size);
   for (var i = 0; i < buf.length; i++) {
     rbuf[rbuf.length - 1 - i] = buf[buf.length - 1 - i];
@@ -1572,7 +1577,6 @@ BN.pad = function(buf, natlen, size) {
 };
 
 module.exports = BN;
-
 }).call(this,require("buffer").Buffer)
 },{"../util/preconditions":44,"bn.js":62,"buffer":114,"lodash":188}],7:[function(require,module,exports){
 (function (Buffer){
@@ -4632,7 +4636,7 @@ addNetwork({
     name: 'livenet',
     alias: 'mainnet',
     coin: 'btc',
-    url: 'bitcoin:',
+    url: 'bitcoin',
     coinName: 'BITCOIN',
     shortName: 'BTC',
     prefix: '1',
@@ -4769,7 +4773,7 @@ addNetwork({
     alias: 'ventas',
     coin: 'ven',
     coinName: 'VENTAS',
-    url: 'ventas:',
+    url: 'ventas',
     shortName: 'VEN',
     algorithm: 'scrypt',
     txtimestamp: true,
@@ -4790,7 +4794,7 @@ addNetwork({
     name: 'yangcoin',
     alias: 'yangcoin',
     coin: 'yng',
-    url: 'yangcoin:',
+    url: 'yangcoin',
     coinName: 'YANGCOIN',
     shortName: 'YNG',
     prefix: 'Y',
@@ -4813,7 +4817,7 @@ addNetwork({
     name: 'quasar',
     alias: 'quasar',
     coin: 'qac',
-    url: 'quasar:',
+    url: 'quasar',
     coinName: 'Quasar',
     shortName: 'QAC',
     prefix: 'Q',
@@ -4835,7 +4839,7 @@ addNetwork({
     name: 'paxcoin',
     alias: 'paxcoin',
     coin: 'pax',
-    url: 'paxcoin:',
+    url: 'paxcoin',
     coinName: 'PAXCOIN',
     shortName: 'PAX',
     prefix: 'P',
@@ -4860,7 +4864,7 @@ addNetwork({
     name: 'qctcoin',
     alias: 'qctcoin',
     coin: 'qct',
-    url: 'qcity:',
+    url: 'qcity',
     coinName: 'QCITYCOIN',
     shortName: 'QCT',
     prefix: 'C',
@@ -4882,7 +4886,7 @@ addNetwork({
     name: 'searchcoin',
     alias: 'searchcoin',
     coin: 'ssc',
-    url: 'searchcoin:',
+    url: 'searchcoin',
     coinName: 'Searchcoin',
     shortName: 'SSC',
     prefix: 'S',
@@ -4905,7 +4909,7 @@ addNetwork({
     name: 'litecoin',
     alias: 'litecoin',
     coin: 'ltc',
-    url: 'litecoin:',
+    url: 'litecoin',
     coinName: 'LITECOIN',
     shortName: 'LTC',
     algorithm: 'scrypt',
@@ -4922,8 +4926,28 @@ addNetwork({
         'dnsseed.litecointools.com'
     ]
 });
-var ventas = get('ventas');
-var yangcoin = get('yangcoin');
+addNetwork({
+    name: 'terabit',
+    alias: 'terabit',
+    coin: 'tbc',
+    url: 'terabit',
+    coinName: 'TERABIT',
+    shortName: 'TBC',
+    txtimestamp: true,
+    pubkeyhash: 0x41,
+    privatekey: 0xcc,
+    scripthash: 0x10,
+    xpubkey: 0x0488b21e,
+    xprivkey: 0x0488abe4,
+    networkMagic: 0x70352205,
+    port: 13001,
+    algorithm: 'scrypt',
+    prefix: 'T',
+    dnsSeeds: [
+        'tera001.bitchk.com'
+    ]
+});
+
 /**
  * @namespace Networks
  */
@@ -4934,8 +4958,6 @@ module.exports = {
     livenet: livenet,
     mainnet: livenet,
     testnet: testnet,
-    ventas: ventas,
-    yangcoin: yangcoin,
     get: get,
     enableRegtest: enableRegtest,
     disableRegtest: disableRegtest,
@@ -9180,7 +9202,7 @@ function Output(args) {
 Object.defineProperty(Output.prototype, 'script', {
   configurable: false,
   enumerable: true,
-  get: function() {
+  get: function () {
     if (this._script) {
       return this._script;
     } else {
@@ -9194,10 +9216,10 @@ Object.defineProperty(Output.prototype, 'script', {
 Object.defineProperty(Output.prototype, 'satoshis', {
   configurable: false,
   enumerable: true,
-  get: function() {
+  get: function () {
     return this._satoshis;
   },
-  set: function(num) {
+  set: function (num) {
     if (num instanceof BN) {
       this._satoshisBN = num;
       this._satoshis = num.toNumber();
@@ -9219,14 +9241,18 @@ Object.defineProperty(Output.prototype, 'satoshis', {
   }
 });
 
-Output.prototype.invalidSatoshis = function() {
+Output.prototype.invalidSatoshis = function () {
+  //console.log(this._satoshis,  this._satoshisBN.toNumber());
   if (this._satoshis > MAX_SAFE_INTEGER) {
-    return 'transaction txout satoshis greater than max safe integer';
+    console.log("warning... max ", this._satoshis, MAX_SAFE_INTEGER);
+    //  return 'transaction txout satoshis greater than max safe integer';
   }
   if (this._satoshis !== this._satoshisBN.toNumber()) {
+    console.log("output not eq ", this._satoshis, this._satoshisBN.toNumber());
     return 'transaction txout satoshis has corrupted value';
   }
   if (this._satoshis < 0) {
+    console.log("output under zero  ", this._satoshis);
     return 'transaction txout negative';
   }
   return false;
@@ -9240,16 +9266,16 @@ Output.prototype.toObject = Output.prototype.toJSON = function toObject() {
   return obj;
 };
 
-Output.fromObject = function(data) {
+Output.fromObject = function (data) {
   return new Output(data);
 };
 
-Output.prototype.setScriptFromBuffer = function(buffer) {
+Output.prototype.setScriptFromBuffer = function (buffer) {
   this._scriptBuffer = buffer;
   try {
     this._script = Script.fromBuffer(this._scriptBuffer);
     this._script._isOutput = true;
-  } catch(e) {
+  } catch (e) {
     if (e instanceof errors.Script.InvalidBuffer) {
       this._script = null;
     } else {
@@ -9258,7 +9284,7 @@ Output.prototype.setScriptFromBuffer = function(buffer) {
   }
 };
 
-Output.prototype.setScript = function(script) {
+Output.prototype.setScript = function (script) {
   if (script instanceof Script) {
     this._scriptBuffer = script.toBuffer();
     this._script = script;
@@ -9275,7 +9301,7 @@ Output.prototype.setScript = function(script) {
   return this;
 };
 
-Output.prototype.inspect = function() {
+Output.prototype.inspect = function () {
   var scriptStr;
   if (this.script) {
     scriptStr = this.script.inspect();
@@ -9285,7 +9311,7 @@ Output.prototype.inspect = function() {
   return '<Output (' + this.satoshis + ' sats) ' + scriptStr + '>';
 };
 
-Output.fromBufferReader = function(br) {
+Output.fromBufferReader = function (br) {
   var obj = {};
   obj.satoshis = br.readUInt64LEBN();
   var size = br.readVarintNum();
@@ -9297,7 +9323,7 @@ Output.fromBufferReader = function(br) {
   return new Output(obj);
 };
 
-Output.prototype.toBufferWriter = function(writer) {
+Output.prototype.toBufferWriter = function (writer) {
   if (!writer) {
     writer = new BufferWriter();
   }
@@ -9309,7 +9335,6 @@ Output.prototype.toBufferWriter = function(writer) {
 };
 
 module.exports = Output;
-
 },{"../crypto/bn":6,"../encoding/bufferwriter":15,"../errors":17,"../script":25,"../util/buffer":42,"../util/js":43,"../util/preconditions":44,"buffer":114,"lodash":188}],36:[function(require,module,exports){
 (function (Buffer){
 'use strict';
@@ -11256,13 +11281,13 @@ URI.isValid = function(arg, knownParams) {
  */
 URI.parse = function(uri) {
     var info = URL.parse(uri, true);
-
-    var net = Networks.get(info.protocol, "url");
+    var protocol = info.protocol.replace(/[^0-9a-z]/gi, '');
+    var net = Networks.get(protocol, "url");
     // if (info.protocol !== 'bitcoin:') {
     //     throw new TypeError('Invalid bitcoin URI');
     // }
     if (!net) {
-        throw new TypeError('Invalid coin URI:' + info.protocol);
+        throw new TypeError('Invalid coin URI:' + protocol);
     }
     // workaround to host insensitiveness
     var group = /[^:]*:\/?\/?([^?]*)/.exec(uri);
@@ -25494,50 +25519,27 @@ utils.intFromLE = intFromLE;
 
 },{"bn.js":93,"minimalistic-assert":193,"minimalistic-crypto-utils":194}],109:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      {
-        "raw": "elliptic@^6.0.0",
-        "scope": null,
-        "escapedName": "elliptic",
-        "name": "elliptic",
-        "rawSpec": "^6.0.0",
-        "spec": ">=6.0.0 <7.0.0",
-        "type": "range"
-      },
-      "/Users/user/dev/blockchain/wallet/bitcore-lib/node_modules/browserify-sign"
-    ]
-  ],
-  "_from": "elliptic@>=6.0.0 <7.0.0",
+  "_from": "elliptic@^6.0.0",
   "_id": "elliptic@6.4.0",
-  "_inCache": true,
+  "_inBundle": false,
+  "_integrity": "sha1-ysmvh2LIWDYYcAPI3+GT5eLq5d8=",
   "_location": "/browserify-sign/elliptic",
-  "_nodeVersion": "7.0.0",
-  "_npmOperationalInternal": {
-    "host": "packages-18-east.internal.npmjs.com",
-    "tmp": "tmp/elliptic-6.4.0.tgz_1487798866428_0.30510620190761983"
-  },
-  "_npmUser": {
-    "name": "indutny",
-    "email": "fedor@indutny.com"
-  },
-  "_npmVersion": "3.10.8",
   "_phantomChildren": {},
   "_requested": {
+    "type": "range",
+    "registry": true,
     "raw": "elliptic@^6.0.0",
-    "scope": null,
-    "escapedName": "elliptic",
     "name": "elliptic",
+    "escapedName": "elliptic",
     "rawSpec": "^6.0.0",
-    "spec": ">=6.0.0 <7.0.0",
-    "type": "range"
+    "saveSpec": null,
+    "fetchSpec": "^6.0.0"
   },
   "_requiredBy": [
     "/browserify-sign"
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz",
   "_shasum": "cac9af8762c85836187003c8dfe193e5e2eae5df",
-  "_shrinkwrap": null,
   "_spec": "elliptic@^6.0.0",
   "_where": "/Users/user/dev/blockchain/wallet/bitcore-lib/node_modules/browserify-sign",
   "author": {
@@ -25547,6 +25549,7 @@ module.exports={
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
+  "bundleDependencies": false,
   "dependencies": {
     "bn.js": "^4.4.0",
     "brorand": "^1.0.1",
@@ -25556,6 +25559,7 @@ module.exports={
     "minimalistic-assert": "^1.0.0",
     "minimalistic-crypto-utils": "^1.0.0"
   },
+  "deprecated": false,
   "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^1.4.3",
@@ -25573,15 +25577,9 @@ module.exports={
     "jshint": "^2.6.0",
     "mocha": "^2.1.0"
   },
-  "directories": {},
-  "dist": {
-    "shasum": "cac9af8762c85836187003c8dfe193e5e2eae5df",
-    "tarball": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz"
-  },
   "files": [
     "lib"
   ],
-  "gitHead": "6b0d2b76caae91471649c8e21f0b1d3ba0f96090",
   "homepage": "https://github.com/indutny/elliptic",
   "keywords": [
     "EC",
@@ -25591,15 +25589,7 @@ module.exports={
   ],
   "license": "MIT",
   "main": "lib/elliptic.js",
-  "maintainers": [
-    {
-      "name": "indutny",
-      "email": "fedor@indutny.com"
-    }
-  ],
   "name": "elliptic",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/indutny/elliptic.git"
@@ -28117,62 +28107,27 @@ arguments[4][107][0].apply(exports,arguments)
 arguments[4][108][0].apply(exports,arguments)
 },{"bn.js":118,"dup":108,"minimalistic-assert":193,"minimalistic-crypto-utils":194}],134:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      {
-        "raw": "elliptic@^6.0.0",
-        "scope": null,
-        "escapedName": "elliptic",
-        "name": "elliptic",
-        "rawSpec": "^6.0.0",
-        "spec": ">=6.0.0 <7.0.0",
-        "type": "range"
-      },
-      "/Users/user/dev/blockchain/wallet/bitcore-lib/node_modules/browserify-sign"
-    ],
-    [
-      {
-        "raw": "elliptic@^6.0.0",
-        "scope": null,
-        "escapedName": "elliptic",
-        "name": "elliptic",
-        "rawSpec": "^6.0.0",
-        "spec": ">=6.0.0 <7.0.0",
-        "type": "range"
-      },
-      "/Users/user/dev/blockchain/wallet/bitcore-lib/node_modules/create-ecdh"
-    ]
-  ],
   "_from": "elliptic@^6.0.0",
   "_id": "elliptic@6.4.0",
-  "_inCache": true,
+  "_inBundle": false,
+  "_integrity": "sha1-ysmvh2LIWDYYcAPI3+GT5eLq5d8=",
   "_location": "/create-ecdh/elliptic",
-  "_nodeVersion": "7.0.0",
-  "_npmOperationalInternal": {
-    "host": "packages-18-east.internal.npmjs.com",
-    "tmp": "tmp/elliptic-6.4.0.tgz_1487798866428_0.30510620190761983"
-  },
-  "_npmUser": {
-    "name": "indutny",
-    "email": "fedor@indutny.com"
-  },
-  "_npmVersion": "3.10.8",
   "_phantomChildren": {},
   "_requested": {
+    "type": "range",
+    "registry": true,
     "raw": "elliptic@^6.0.0",
-    "scope": null,
-    "escapedName": "elliptic",
     "name": "elliptic",
+    "escapedName": "elliptic",
     "rawSpec": "^6.0.0",
-    "spec": ">=6.0.0 <7.0.0",
-    "type": "range"
+    "saveSpec": null,
+    "fetchSpec": "^6.0.0"
   },
   "_requiredBy": [
     "/create-ecdh"
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz",
   "_shasum": "cac9af8762c85836187003c8dfe193e5e2eae5df",
-  "_shrinkwrap": null,
   "_spec": "elliptic@^6.0.0",
   "_where": "/Users/user/dev/blockchain/wallet/bitcore-lib/node_modules/create-ecdh",
   "author": {
@@ -28182,6 +28137,7 @@ module.exports={
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
+  "bundleDependencies": false,
   "dependencies": {
     "bn.js": "^4.4.0",
     "brorand": "^1.0.1",
@@ -28191,6 +28147,7 @@ module.exports={
     "minimalistic-assert": "^1.0.0",
     "minimalistic-crypto-utils": "^1.0.0"
   },
+  "deprecated": false,
   "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^1.4.3",
@@ -28208,15 +28165,9 @@ module.exports={
     "jshint": "^2.6.0",
     "mocha": "^2.1.0"
   },
-  "directories": {},
-  "dist": {
-    "shasum": "cac9af8762c85836187003c8dfe193e5e2eae5df",
-    "tarball": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz"
-  },
   "files": [
     "lib"
   ],
-  "gitHead": "6b0d2b76caae91471649c8e21f0b1d3ba0f96090",
   "homepage": "https://github.com/indutny/elliptic",
   "keywords": [
     "EC",
@@ -28226,15 +28177,7 @@ module.exports={
   ],
   "license": "MIT",
   "main": "lib/elliptic.js",
-  "maintainers": [
-    {
-      "name": "indutny",
-      "email": "fedor@indutny.com"
-    }
-  ],
   "name": "elliptic",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/indutny/elliptic.git"
@@ -32326,13 +32269,7 @@ utils.getJSF = getJSF;
 
 },{}],165:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      "elliptic@3.0.3",
-      "/Users/user/dev/blockchain/wallet/bitcore-lib"
-    ]
-  ],
-  "_from": "elliptic@3.0.3",
+  "_from": "elliptic@=3.0.3",
   "_id": "elliptic@3.0.3",
   "_inBundle": false,
   "_integrity": "sha1-hlybQgv75VAGuflp+XoNLESWZZU=",
@@ -32341,18 +32278,19 @@ module.exports={
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "elliptic@3.0.3",
+    "raw": "elliptic@=3.0.3",
     "name": "elliptic",
     "escapedName": "elliptic",
-    "rawSpec": "3.0.3",
+    "rawSpec": "=3.0.3",
     "saveSpec": null,
-    "fetchSpec": "3.0.3"
+    "fetchSpec": "=3.0.3"
   },
   "_requiredBy": [
     "/"
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-3.0.3.tgz",
-  "_spec": "3.0.3",
+  "_shasum": "865c9b420bfbe55006b9f969f97a0d2c44966595",
+  "_spec": "elliptic@=3.0.3",
   "_where": "/Users/user/dev/blockchain/wallet/bitcore-lib",
   "author": {
     "name": "Fedor Indutny",
@@ -32361,12 +32299,14 @@ module.exports={
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
+  "bundleDependencies": false,
   "dependencies": {
     "bn.js": "^2.0.0",
     "brorand": "^1.0.1",
     "hash.js": "^1.0.0",
     "inherits": "^2.0.1"
   },
+  "deprecated": false,
   "description": "EC cryptography",
   "devDependencies": {
     "browserify": "^3.44.2",
@@ -34283,7 +34223,7 @@ arguments[4][181][0].apply(exports,arguments)
 /*!
  * Determine if an object is a Buffer
  *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @author   Feross Aboukhadijeh <https://feross.org>
  * @license  MIT
  */
 
@@ -54653,7 +54593,8 @@ module.exports={
         "coverage": "gulp coverage",
         "build": "gulp"
     },
-    "contributors": [{
+    "contributors": [
+        {
             "name": "Daniel Cousens",
             "email": "bitcoin@dcousens.com"
         },
@@ -54739,6 +54680,7 @@ module.exports={
     },
     "license": "MIT"
 }
+
 },{}],"bitcore-lib":[function(require,module,exports){
 (function (global,Buffer){
 'use strict';
