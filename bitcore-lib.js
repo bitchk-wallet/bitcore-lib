@@ -4771,10 +4771,10 @@ function disableRegtest() {
 addNetwork({
     name: 'ventas',
     alias: 'ventas',
-    coin: 'ven',
+    coin: 'venc',
     coinName: 'VENTAS',
     url: 'ventas',
-    shortName: 'VEN',
+    shortName: 'VENC',
     algorithm: 'scrypt',
     txtimestamp: true,
     skipSignTime: true,
