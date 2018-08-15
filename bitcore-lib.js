@@ -4532,7 +4532,7 @@ function get(arg, keys) {
         if (!_.isArray(keys)) {
             keys = [keys];
         }
-        var containsArg = function(key) {
+        var containsArg = function (key) {
             return networks[index][key] === arg;
         };
         for (var index in networks) {
@@ -4601,7 +4601,7 @@ function addNetwork(data) {
             dnsSeeds: data.dnsSeeds
         });
     }
-    _.each(network, function(value) {
+    _.each(network, function (value) {
         if (!_.isUndefined(value) && !_.isObject(value)) {
             networkMaps[value] = network;
         }
@@ -4716,7 +4716,7 @@ for (var key in REGTEST) {
 Object.defineProperty(testnet, 'port', {
     enumerable: true,
     configurable: false,
-    get: function() {
+    get: function () {
         if (this.regtestEnabled) {
             return REGTEST.PORT;
         } else {
@@ -4728,7 +4728,7 @@ Object.defineProperty(testnet, 'port', {
 Object.defineProperty(testnet, 'networkMagic', {
     enumerable: true,
     configurable: false,
-    get: function() {
+    get: function () {
         if (this.regtestEnabled) {
             return REGTEST.NETWORK_MAGIC;
         } else {
@@ -4740,7 +4740,7 @@ Object.defineProperty(testnet, 'networkMagic', {
 Object.defineProperty(testnet, 'dnsSeeds', {
     enumerable: true,
     configurable: false,
-    get: function() {
+    get: function () {
         if (this.regtestEnabled) {
             return REGTEST.DNS_SEEDS;
         } else {
@@ -4855,7 +4855,7 @@ addNetwork({
     dnsSeeds: [
         'pax001.bitchk.com'
     ],
-    blockreward: function(height) {
+    blockreward: function (height) {
         return 125;
     }
 });
@@ -4945,6 +4945,29 @@ addNetwork({
     prefix: 'T',
     dnsSeeds: [
         'tera001.bitchk.com'
+    ]
+});
+
+addNetwork({
+    name: 'jbcoinn',
+    alias: 'jbcoin',
+    coin: 'jbc',
+    url: 'jbcoin',
+    coinName: 'JinBioCoin',
+    shortName: 'JBC',
+    prefix: 'J',
+    txtimestamp: true,
+    skipSignTime: false,
+    algorithm: "scrypt",
+    pubkeyhash: 0x2b,
+    privatekey: 0x69,
+    scripthash: 0xcc,
+    xpubkey: 0x0488b21e,
+    xprivkey: 0x0488ade4,
+    networkMagic: 0xa4424343,
+    port: 13701,
+    dnsSeeds: [
+        'jbc001.bitchk.com'
     ]
 });
 
@@ -25519,29 +25542,35 @@ utils.intFromLE = intFromLE;
 
 },{"bn.js":93,"minimalistic-assert":193,"minimalistic-crypto-utils":194}],109:[function(require,module,exports){
 module.exports={
-  "_from": "elliptic@^6.0.0",
+  "_args": [
+    [
+      "elliptic@6.4.0",
+      "/Users/user/dev/blockchain/wallet/bitcore-lib"
+    ]
+  ],
+  "_development": true,
+  "_from": "elliptic@6.4.0",
   "_id": "elliptic@6.4.0",
   "_inBundle": false,
   "_integrity": "sha1-ysmvh2LIWDYYcAPI3+GT5eLq5d8=",
   "_location": "/browserify-sign/elliptic",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "elliptic@^6.0.0",
+    "raw": "elliptic@6.4.0",
     "name": "elliptic",
     "escapedName": "elliptic",
-    "rawSpec": "^6.0.0",
+    "rawSpec": "6.4.0",
     "saveSpec": null,
-    "fetchSpec": "^6.0.0"
+    "fetchSpec": "6.4.0"
   },
   "_requiredBy": [
     "/browserify-sign"
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz",
-  "_shasum": "cac9af8762c85836187003c8dfe193e5e2eae5df",
-  "_spec": "elliptic@^6.0.0",
-  "_where": "/Users/user/dev/blockchain/wallet/bitcore-lib/node_modules/browserify-sign",
+  "_spec": "6.4.0",
+  "_where": "/Users/user/dev/blockchain/wallet/bitcore-lib",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -25549,7 +25578,6 @@ module.exports={
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "bundleDependencies": false,
   "dependencies": {
     "bn.js": "^4.4.0",
     "brorand": "^1.0.1",
@@ -25559,7 +25587,6 @@ module.exports={
     "minimalistic-assert": "^1.0.0",
     "minimalistic-crypto-utils": "^1.0.0"
   },
-  "deprecated": false,
   "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^1.4.3",
@@ -28107,29 +28134,35 @@ arguments[4][107][0].apply(exports,arguments)
 arguments[4][108][0].apply(exports,arguments)
 },{"bn.js":118,"dup":108,"minimalistic-assert":193,"minimalistic-crypto-utils":194}],134:[function(require,module,exports){
 module.exports={
-  "_from": "elliptic@^6.0.0",
+  "_args": [
+    [
+      "elliptic@6.4.0",
+      "/Users/user/dev/blockchain/wallet/bitcore-lib"
+    ]
+  ],
+  "_development": true,
+  "_from": "elliptic@6.4.0",
   "_id": "elliptic@6.4.0",
   "_inBundle": false,
   "_integrity": "sha1-ysmvh2LIWDYYcAPI3+GT5eLq5d8=",
   "_location": "/create-ecdh/elliptic",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "elliptic@^6.0.0",
+    "raw": "elliptic@6.4.0",
     "name": "elliptic",
     "escapedName": "elliptic",
-    "rawSpec": "^6.0.0",
+    "rawSpec": "6.4.0",
     "saveSpec": null,
-    "fetchSpec": "^6.0.0"
+    "fetchSpec": "6.4.0"
   },
   "_requiredBy": [
     "/create-ecdh"
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz",
-  "_shasum": "cac9af8762c85836187003c8dfe193e5e2eae5df",
-  "_spec": "elliptic@^6.0.0",
-  "_where": "/Users/user/dev/blockchain/wallet/bitcore-lib/node_modules/create-ecdh",
+  "_spec": "6.4.0",
+  "_where": "/Users/user/dev/blockchain/wallet/bitcore-lib",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -28137,7 +28170,6 @@ module.exports={
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "bundleDependencies": false,
   "dependencies": {
     "bn.js": "^4.4.0",
     "brorand": "^1.0.1",
@@ -28147,7 +28179,6 @@ module.exports={
     "minimalistic-assert": "^1.0.0",
     "minimalistic-crypto-utils": "^1.0.0"
   },
-  "deprecated": false,
   "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^1.4.3",
@@ -32269,7 +32300,13 @@ utils.getJSF = getJSF;
 
 },{}],165:[function(require,module,exports){
 module.exports={
-  "_from": "elliptic@=3.0.3",
+  "_args": [
+    [
+      "elliptic@3.0.3",
+      "/Users/user/dev/blockchain/wallet/bitcore-lib"
+    ]
+  ],
+  "_from": "elliptic@3.0.3",
   "_id": "elliptic@3.0.3",
   "_inBundle": false,
   "_integrity": "sha1-hlybQgv75VAGuflp+XoNLESWZZU=",
@@ -32278,19 +32315,18 @@ module.exports={
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "elliptic@=3.0.3",
+    "raw": "elliptic@3.0.3",
     "name": "elliptic",
     "escapedName": "elliptic",
-    "rawSpec": "=3.0.3",
+    "rawSpec": "3.0.3",
     "saveSpec": null,
-    "fetchSpec": "=3.0.3"
+    "fetchSpec": "3.0.3"
   },
   "_requiredBy": [
     "/"
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-3.0.3.tgz",
-  "_shasum": "865c9b420bfbe55006b9f969f97a0d2c44966595",
-  "_spec": "elliptic@=3.0.3",
+  "_spec": "3.0.3",
   "_where": "/Users/user/dev/blockchain/wallet/bitcore-lib",
   "author": {
     "name": "Fedor Indutny",
@@ -32299,14 +32335,12 @@ module.exports={
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "bundleDependencies": false,
   "dependencies": {
     "bn.js": "^2.0.0",
     "brorand": "^1.0.1",
     "hash.js": "^1.0.0",
     "inherits": "^2.0.1"
   },
-  "deprecated": false,
   "description": "EC cryptography",
   "devDependencies": {
     "browserify": "^3.44.2",
@@ -54591,7 +54625,7 @@ module.exports={
         "lint": "gulp lint",
         "test": "gulp test",
         "coverage": "gulp coverage",
-        "build": "gulp"
+        "build": "gulp browser"
     },
     "contributors": [
         {
