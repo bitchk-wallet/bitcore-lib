@@ -4949,7 +4949,7 @@ addNetwork({
 });
 
 addNetwork({
-    name: 'jbcoinn',
+    name: 'jbcoin',
     alias: 'jbcoin',
     coin: 'jbc',
     url: 'jbcoin',
