@@ -2029,7 +2029,8 @@ Point.getN = function getN() {
   return new BN(ec.curve.n.toArray());
 };
 
-Point.prototype._getX = Point.prototype.getX;
+if (!Point.prototype._getX)
+  Point.prototype._getX = Point.prototype.getX;
 
 /**
  *
@@ -2041,7 +2042,8 @@ Point.prototype.getX = function getX() {
   return new BN(this._getX().toArray());
 };
 
-Point.prototype._getY = Point.prototype.getY;
+if (!Point.prototype._getY)
+  Point.prototype._getY = Point.prototype.getY;
 
 /**
  *
@@ -52011,7 +52013,7 @@ module.exports={
         "lint": "gulp lint",
         "test": "gulp test",
         "coverage": "gulp coverage",
-        "build": "gulp"
+        "build": "gulp browser"
     },
     "contributors": [
         {
