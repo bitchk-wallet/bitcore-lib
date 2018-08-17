@@ -65,7 +65,7 @@ function Address(data, network, type) {
     $.checkArgument(data, 'First argument is required, please include address data.', 'guide/address.html');
 
     if (network && !Networks.get(network)) {
-        throw new TypeError('Second argument must be "livenet" or "testnet".');
+        throw new TypeError('Second argument must be "livenet" or "testnet".' + network.name);
     }
 
     if (type && (type !== Address.PayToPublicKeyHash && type !== Address.PayToScriptHash)) {
@@ -2036,8 +2036,9 @@ Point.getG = function getG() {
 Point.getN = function getN() {
   return new BN(ec.curve.n.toArray());
 };
+if (!Point.prototype._getX)
+  Point.prototype._getX = Point.prototype.getX;
 
-Point.prototype._getX = Point.prototype.getX;
 
 /**
  *
@@ -2049,8 +2050,8 @@ Point.prototype.getX = function getX() {
   return new BN(this._getX().toArray());
 };
 
-Point.prototype._getY = Point.prototype.getY;
-
+if (!Point.prototype._getY)
+  Point.prototype._getY = Point.prototype.getY;
 /**
  *
  * Will return the Y coordinate of the Point
@@ -4958,6 +4959,7 @@ addNetwork({
     prefix: 'J',
     txtimestamp: true,
     skipSignTime: false,
+    pos:true,
     algorithm: "scrypt",
     pubkeyhash: 0x2b,
     privatekey: 0x69,
